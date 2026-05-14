@@ -26,11 +26,15 @@ AiClip 可以把 UI 截图转换成一套结构化的素材处理流程：自动
 
 ## 安装
 
-安装依赖，配置 `.env.sample` 或 `.env.local`，然后启动开发服务：
+安装 Node 和 Python 依赖，配置 `.env.sample` 或 `.env.local`，然后启动开发服务：
 
 ```bash
-npm install && npm run dev
+npm install
+python3 -m pip install -r requirements.txt
+npm run dev
 ```
+
+AiClip 在生成资产时会调用本地 Python 脚本 `scripts/process_chroma_icons.py`，用于扣除绿色 chroma 背景并导出透明 PNG，所以运行 Next.js 服务的机器需要可用的 `python3` 和 Pillow。
 
 ## 环境变量
 

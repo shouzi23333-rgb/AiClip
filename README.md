@@ -28,11 +28,15 @@ AiClip turns a UI screenshot into a structured asset workflow: it can automatica
 
 ## Install
 
-Install dependencies, configure `.env.sample` or `.env.local`, then run the dev server:
+Install Node and Python dependencies, configure `.env.sample` or `.env.local`, then run the dev server:
 
 ```bash
-npm install && npm run dev
+npm install
+python3 -m pip install -r requirements.txt
+npm run dev
 ```
+
+AiClip uses the local Python script `scripts/process_chroma_icons.py` during asset generation to remove the green chroma background and export transparent PNG files, so `python3` and Pillow must be available on the machine running the Next.js server.
 
 ## Environment
 
