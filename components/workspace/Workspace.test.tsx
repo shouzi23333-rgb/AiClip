@@ -1,6 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { Workspace, getGeneratedAssetPartBlob } from "./Workspace";
+import {
+  Workspace,
+  createGeneratedAssetPromptMarkdown,
+  getGeneratedAssetPartBlob,
+} from "./Workspace";
 
 describe("Workspace", () => {
   it("renders a simplified design page", () => {
@@ -358,6 +362,34 @@ describe("Workspace", () => {
 
     expect(fetchBlob).not.toHaveBeenCalled();
     expect(await readBlobBytes(blob)).toEqual(pngBytes);
+  });
+
+  it("creates an English reconstruction prompt for downloaded asset packages", () => {
+    const prompt = createGeneratedAssetPromptMarkdown({
+      asset: {
+        createdAt: 1,
+        filename: "demo.transparent-assets.png",
+        id: "run",
+        parts: [
+          {
+            assetName: "search_icon",
+            filename: "search_icon.png",
+            id: "asset_001",
+            prompt: "",
+            url: "blob:search",
+          },
+        ],
+        status: "ready",
+      },
+      sourcePath: "source.png",
+    });
+
+    expect(prompt).toContain("Use `source.png` as the original UI reference image");
+    expect(prompt).toContain("Requirements:");
+    expect(prompt).toContain("`assets/` directory");
+    expect(prompt).toContain("assets/search_icon.png");
+    expect(prompt).not.toContain("请参考");
+    expect(prompt).not.toContain("要求：");
   });
 });
 

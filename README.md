@@ -80,11 +80,11 @@ The downloaded zip includes:
 You can attach the package to your coding agent and reference `prompt.md` directly. The prompt says:
 
 ```md
-请参考 `source.png` 这张 UI 原图，使用当前切图包进行 UI 还原。
+Use `source.png` as the original UI reference image and reconstruct the UI with this asset package.
 
-要求：
-- 还原整体布局、层级、间距、颜色、字体风格和视觉比例。
-- 涉及图标、插画、装饰图、头像、Logo、商品图等素材时，优先使用切图包内 `assets/` 目录的素材。
-- 不要用图标库或重新绘制替代已有切图素材，除非资源包里确实没有对应素材。
-- 保持素材透明背景、原始比例和视觉细节。
+Requirements:
+- Recreate the overall layout, hierarchy, spacing, colors, typography, and visual proportions.
+- For icons, illustrations, decorations, avatars, logos, product images, and other visual assets, prefer the files in the `assets/` directory.
+- Do not replace packaged assets with an icon library or redraw them unless the package does not include the needed asset.
+- Preserve each asset's transparent background, original proportions, and visual details.
 ```
