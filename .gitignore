@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Build and cache output
+tmp/
+*.tsbuildinfo
+
+# Local environment and secrets
+.env
+.env.*
+!.env.sample
+
+# Local editor files
+.idea/
+.DS_Store
+
+# Local Codex files
+.codex/
+.codex_tmp/

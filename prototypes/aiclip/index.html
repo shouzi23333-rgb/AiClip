@@ -1,0 +1,1172 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AiClip</title>
+    <style>
+      :root {
+        --bg: #f4f5f7;
+        --panel: #ffffff;
+        --line: #d9dee7;
+        --text: #18202f;
+        --muted: #667085;
+        --blue: #2563eb;
+        --purple: #7c3aed;
+        --green: #16a34a;
+        --orange: #ea580c;
+        --gray: #6b7280;
+        --red: #dc2626;
+        --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      button,
+      select,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--text);
+        border-radius: 7px;
+        height: 34px;
+        padding: 0 12px;
+        cursor: pointer;
+      }
+
+      button.primary {
+        border-color: var(--blue);
+        background: var(--blue);
+        color: #fff;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.48;
+      }
+
+      .app {
+        display: grid;
+        grid-template-rows: 56px minmax(0, 1fr) 212px;
+        height: 100vh;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-bottom: 1px solid var(--line);
+        background: #fff;
+        padding: 0 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        min-width: 260px;
+      }
+
+      .brand strong {
+        font-size: 16px;
+      }
+
+      .brand span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .main {
+        display: grid;
+        grid-template-columns: minmax(420px, 1.25fr) 360px minmax(360px, 0.95fr);
+        gap: 12px;
+        min-height: 0;
+        padding: 12px;
+      }
+
+      .panel {
+        min-height: 0;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        min-height: 44px;
+        border-bottom: 1px solid var(--line);
+        padding: 0 12px;
+      }
+
+      .panel-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 650;
+        font-size: 13px;
+      }
+
+      .panel-title small {
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .canvas-panel,
+      .preview-panel,
+      .inspector-panel {
+        display: flex;
+        min-height: 0;
+        flex-direction: column;
+      }
+
+      .canvas-wrap {
+        display: grid;
+        flex: 1;
+        min-height: 0;
+        place-items: center;
+        background:
+          linear-gradient(45deg, #f0f2f5 25%, transparent 25%),
+          linear-gradient(-45deg, #f0f2f5 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #f0f2f5 75%),
+          linear-gradient(-45deg, transparent 75%, #f0f2f5 75%);
+        background-color: #fafbfc;
+        background-position:
+          0 0,
+          0 8px,
+          8px -8px,
+          -8px 0;
+        background-size: 16px 16px;
+        padding: 18px;
+      }
+
+      .mock-screen {
+        position: relative;
+        width: min(100%, 390px);
+        aspect-ratio: 390 / 844;
+        border: 1px solid #ccd3df;
+        border-radius: 22px;
+        background: #eef2f7;
+        overflow: hidden;
+      }
+
+      .phone-ui {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.28), transparent 32%),
+          linear-gradient(180deg, #f8fbff 0%, #eef4f8 48%, #f7f8fb 100%);
+      }
+
+      .phone-header {
+        position: absolute;
+        left: 22px;
+        top: 42px;
+        right: 22px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f97316, #facc15);
+      }
+
+      .search-dot {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 1px solid #d8dee9;
+      }
+
+      .hero {
+        position: absolute;
+        left: 22px;
+        top: 116px;
+        right: 22px;
+        height: 170px;
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at 75% 28%, rgba(255, 255, 255, 0.82), transparent 16%),
+          linear-gradient(135deg, #2563eb, #06b6d4 52%, #10b981);
+        box-shadow: 0 18px 32px rgba(15, 23, 42, 0.16);
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        left: 24px;
+        top: 34px;
+        width: 142px;
+        height: 20px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.84);
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        left: 24px;
+        top: 70px;
+        width: 224px;
+        height: 52px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.28);
+      }
+
+      .tabs {
+        position: absolute;
+        left: 22px;
+        top: 314px;
+        display: flex;
+        gap: 9px;
+      }
+
+      .tab {
+        width: 74px;
+        height: 32px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid #dbe2ea;
+      }
+
+      .tab.active {
+        background: #111827;
+      }
+
+      .card {
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        height: 86px;
+        border-radius: 14px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+      }
+
+      .card.one {
+        top: 372px;
+      }
+
+      .card.two {
+        top: 474px;
+      }
+
+      .thumb {
+        position: absolute;
+        left: 16px;
+        top: 15px;
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #c084fc, #60a5fa);
+      }
+
+      .line {
+        position: absolute;
+        left: 88px;
+        height: 12px;
+        border-radius: 999px;
+        background: #d8dee9;
+      }
+
+      .line.a {
+        top: 20px;
+        width: 178px;
+      }
+
+      .line.b {
+        top: 44px;
+        width: 118px;
+      }
+
+      .bottom-nav {
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        bottom: 22px;
+        height: 62px;
+        border-radius: 22px;
+        background: #101828;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+      }
+
+      .nav-dot {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.24);
+      }
+
+      .bbox {
+        position: absolute;
+        border: 2px solid var(--blue);
+        background: rgba(37, 99, 235, 0.08);
+        cursor: pointer;
+      }
+
+      .bbox.selected {
+        outline: 3px solid rgba(24, 32, 47, 0.82);
+        outline-offset: 2px;
+      }
+
+      .bbox.needs-review {
+        box-shadow: inset 0 0 0 2px var(--red);
+      }
+
+      .bbox[data-strategy="icon"] {
+        border-color: var(--purple);
+        background: rgba(124, 58, 237, 0.08);
+      }
+
+      .bbox[data-strategy="crop"] {
+        border-color: var(--green);
+        background: rgba(22, 163, 74, 0.08);
+      }
+
+      .bbox[data-strategy="regenerate"] {
+        border-color: var(--orange);
+        background: rgba(234, 88, 12, 0.08);
+      }
+
+      .bbox[data-strategy="ignore"] {
+        border-color: var(--gray);
+        background: rgba(107, 114, 128, 0.08);
+      }
+
+      .bbox-label {
+        position: absolute;
+        left: -2px;
+        top: -23px;
+        max-width: 160px;
+        height: 20px;
+        border-radius: 5px 5px 5px 0;
+        background: currentColor;
+        color: #fff;
+        font-size: 11px;
+        line-height: 20px;
+        overflow: hidden;
+        padding: 0 7px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .inspector-body {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        flex: 1;
+        min-height: 0;
+      }
+
+      .element-list {
+        overflow: auto;
+        padding: 8px;
+      }
+
+      .element-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        padding: 8px;
+        cursor: pointer;
+      }
+
+      .element-row + .element-row {
+        margin-top: 6px;
+      }
+
+      .element-row.selected {
+        border-color: #9db7f8;
+        background: #eff5ff;
+      }
+
+      .element-name {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .element-name span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: var(--blue);
+      }
+
+      .dot.icon {
+        background: var(--purple);
+      }
+
+      .dot.crop {
+        background: var(--green);
+      }
+
+      .dot.regenerate {
+        background: var(--orange);
+      }
+
+      .dot.ignore {
+        background: var(--gray);
+      }
+
+      .meta {
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        height: 22px;
+        border-radius: 999px;
+        background: #f0f3f8;
+        color: #3f4b5e;
+        font-size: 11px;
+        padding: 0 8px;
+      }
+
+      .detail {
+        border-top: 1px solid var(--line);
+        padding: 12px;
+      }
+
+      .field {
+        display: grid;
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+
+      .field label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 650;
+        text-transform: uppercase;
+      }
+
+      .field select,
+      .field input,
+      .field textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #fff;
+        color: var(--text);
+        padding: 8px;
+      }
+
+      .field textarea {
+        min-height: 74px;
+        resize: vertical;
+      }
+
+      .preview-body {
+        display: grid;
+        flex: 1;
+        min-height: 0;
+        place-items: center;
+        background: #eef1f5;
+        padding: 18px;
+      }
+
+      .preview-screen {
+        width: min(100%, 320px);
+        aspect-ratio: 390 / 844;
+        border: 1px solid #c9d2df;
+        border-radius: 20px;
+        background: #fff;
+        overflow: hidden;
+      }
+
+      .preview-placeholder {
+        display: grid;
+        height: 100%;
+        place-items: center;
+        color: var(--muted);
+        font-size: 13px;
+        padding: 28px;
+        text-align: center;
+      }
+
+      .bottom {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        min-height: 0;
+        padding: 0 12px 12px;
+      }
+
+      .bottom .panel {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .asset-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+        gap: 8px;
+        overflow: auto;
+        padding: 10px;
+      }
+
+      .asset-tile {
+        min-height: 74px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #f8fafc;
+        padding: 8px;
+      }
+
+      .asset-preview {
+        height: 36px;
+        border-radius: 6px;
+        background:
+          linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(16, 185, 129, 0.28)),
+          #fff;
+      }
+
+      .asset-title {
+        margin-top: 7px;
+        overflow: hidden;
+        color: var(--muted);
+        font-size: 11px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .diff-body,
+      .log-body {
+        flex: 1;
+        overflow: auto;
+        padding: 10px;
+      }
+
+      .diff-strip {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .diff-box {
+        display: grid;
+        min-height: 84px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #f8fafc;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .score {
+        margin-top: 10px;
+        color: var(--text);
+        font-size: 13px;
+      }
+
+      .log-item {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .empty {
+        display: grid;
+        min-height: 120px;
+        place-items: center;
+        color: var(--muted);
+        font-size: 13px;
+        padding: 18px;
+        text-align: center;
+      }
+
+      @media (max-width: 1180px) {
+        .app {
+          height: auto;
+          min-height: 100vh;
+          grid-template-rows: auto auto auto;
+        }
+
+        .topbar,
+        .main,
+        .bottom {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          align-items: stretch;
+          flex-direction: column;
+          padding: 12px;
+        }
+
+        .actions {
+          flex-wrap: wrap;
+        }
+
+        .main {
+          grid-template-columns: 1fr;
+        }
+
+        .canvas-wrap,
+        .preview-body {
+          min-height: 640px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div class="brand">
+          <strong>AiClip</strong>
+          <span>以 Manifest 为核心的 UI 还原工作台</span>
+        </div>
+        <div class="actions">
+          <input id="fileInput" type="file" accept="image/png,image/jpeg" hidden />
+          <button id="uploadButton">上传图片</button>
+          <button id="analyzeButton" class="primary">模拟分析</button>
+          <button id="assetsButton">生成资产</button>
+          <button id="uiButton">生成界面</button>
+          <button id="verifyButton">视觉验证</button>
+        </div>
+        <div class="status" id="statusText">未加载项目</div>
+      </header>
+
+      <section class="main">
+        <section class="panel canvas-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              原图画布
+              <small id="screenMeta">390 x 844</small>
+            </div>
+            <span class="badge" id="selectedBadge">未选择元素</span>
+          </div>
+          <div class="canvas-wrap">
+            <div class="mock-screen" id="mockScreen">
+              <div class="phone-ui">
+                <div class="phone-header">
+                  <div class="avatar"></div>
+                  <div class="search-dot"></div>
+                </div>
+                <div class="hero"></div>
+                <div class="tabs">
+                  <div class="tab active"></div>
+                  <div class="tab"></div>
+                  <div class="tab"></div>
+                </div>
+                <div class="card one">
+                  <div class="thumb"></div>
+                  <div class="line a"></div>
+                  <div class="line b"></div>
+                </div>
+                <div class="card two">
+                  <div class="thumb"></div>
+                  <div class="line a"></div>
+                  <div class="line b"></div>
+                </div>
+                <div class="bottom-nav">
+                  <div class="nav-dot"></div>
+                  <div class="nav-dot"></div>
+                  <div class="nav-dot"></div>
+                  <div class="nav-dot"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel inspector-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              元素检查器
+              <small id="elementCount">0 个元素</small>
+            </div>
+          </div>
+          <div class="inspector-body">
+            <div class="element-list" id="elementList"></div>
+            <div class="detail" id="elementDetail"></div>
+          </div>
+        </section>
+
+        <section class="panel preview-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              预览
+              <small>React + Tailwind 输出</small>
+            </div>
+            <span class="badge" id="previewBadge">未生成</span>
+          </div>
+          <div class="preview-body">
+            <div class="preview-screen">
+              <div class="preview-placeholder" id="previewPlaceholder">
+                点击“生成界面”后这里显示预览。当前原型先展示工作台结构和策略编辑。
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="bottom">
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title">资产 <small>裁剪 / 重绘</small></div>
+          </div>
+          <div class="asset-grid" id="assetGrid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title">差异对比 <small>原图 / 渲染 / 差异</small></div>
+          </div>
+          <div class="diff-body">
+            <div class="diff-strip">
+              <div class="diff-box">原图</div>
+              <div class="diff-box">渲染图</div>
+              <div class="diff-box">差异图</div>
+            </div>
+            <div class="score" id="diffScore">相似度：未验证</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title">任务日志 <small>流水线事件</small></div>
+          </div>
+          <div class="log-body" id="logBody"></div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const STRATEGIES = ["code", "icon", "crop", "regenerate", "ignore"];
+      const TYPES = [
+        "text",
+        "button",
+        "input",
+        "card",
+        "navbar",
+        "tabbar",
+        "list",
+        "icon",
+        "image",
+        "avatar",
+        "logo",
+        "illustration",
+        "background",
+        "decoration",
+      ];
+
+      const state = {
+        projectId: null,
+        sourceImage: { width: 390, height: 844, path: "mock" },
+        selectedElementId: null,
+        manifest: {
+          version: "1.0",
+          sourceImage: { width: 390, height: 844, path: "mock" },
+          theme: {
+            colors: ["#111827", "#2563eb", "#10b981", "#ffffff"],
+            fontStyle: "modern sans",
+            radius: [12, 18, 22],
+            shadowStyle: "soft elevation",
+          },
+          elements: [
+            {
+              id: "profile_avatar",
+              type: "avatar",
+              bbox: [22, 42, 42, 42],
+              strategy: "crop",
+              confidence: 0.91,
+              reason: "头像属于不可替代图片资产，优先从原图裁剪。",
+              needsReview: false,
+            },
+            {
+              id: "search_icon_button",
+              type: "icon",
+              bbox: [332, 45, 36, 36],
+              strategy: "icon",
+              confidence: 0.82,
+              reason: "简单搜索入口，优先使用图标库实现。",
+              needsReview: true,
+            },
+            {
+              id: "hero_background",
+              type: "background",
+              bbox: [22, 116, 346, 170],
+              strategy: "regenerate",
+              confidence: 0.78,
+              reason: "复杂渐变背景和光效适合重绘为独立资产。",
+              prompt:
+                "Create a clean abstract mobile app hero background with blue cyan green gradient, soft glow, no text, 390x170 aspect ratio.",
+              needsReview: true,
+            },
+            {
+              id: "category_tabs",
+              type: "tabbar",
+              bbox: [22, 314, 239, 32],
+              strategy: "code",
+              confidence: 0.94,
+              reason: "Tab 控件应该用真实 HTML/CSS 实现。",
+              needsReview: false,
+            },
+            {
+              id: "list_card_1",
+              type: "card",
+              bbox: [22, 372, 346, 86],
+              strategy: "code",
+              confidence: 0.96,
+              reason: "卡片容器、文本和阴影都适合 CSS 实现。",
+              needsReview: false,
+            },
+            {
+              id: "card_1_thumbnail",
+              type: "illustration",
+              bbox: [38, 387, 56, 56],
+              strategy: "crop",
+              confidence: 0.88,
+              reason: "卡片缩略图可以从原图裁剪，保持风格一致。",
+              needsReview: false,
+            },
+            {
+              id: "list_card_2",
+              type: "card",
+              bbox: [22, 474, 346, 86],
+              strategy: "code",
+              confidence: 0.95,
+              reason: "重复卡片结构适合代码复用。",
+              needsReview: false,
+            },
+            {
+              id: "card_2_thumbnail",
+              type: "illustration",
+              bbox: [38, 489, 56, 56],
+              strategy: "crop",
+              confidence: 0.86,
+              reason: "卡片缩略图可以从原图裁剪。",
+              needsReview: false,
+            },
+            {
+              id: "bottom_navigation",
+              type: "navbar",
+              bbox: [22, 760, 346, 62],
+              strategy: "code",
+              confidence: 0.92,
+              reason: "底部导航是交互控件，必须代码化。",
+              needsReview: false,
+            },
+          ],
+        },
+        assetsGenerated: false,
+        uiGenerated: false,
+        verified: false,
+      };
+
+      const els = {
+        mockScreen: document.getElementById("mockScreen"),
+        elementList: document.getElementById("elementList"),
+        elementDetail: document.getElementById("elementDetail"),
+        elementCount: document.getElementById("elementCount"),
+        selectedBadge: document.getElementById("selectedBadge"),
+        assetGrid: document.getElementById("assetGrid"),
+        logBody: document.getElementById("logBody"),
+        statusText: document.getElementById("statusText"),
+        previewBadge: document.getElementById("previewBadge"),
+        previewPlaceholder: document.getElementById("previewPlaceholder"),
+        diffScore: document.getElementById("diffScore"),
+        uploadButton: document.getElementById("uploadButton"),
+        fileInput: document.getElementById("fileInput"),
+        analyzeButton: document.getElementById("analyzeButton"),
+        assetsButton: document.getElementById("assetsButton"),
+        uiButton: document.getElementById("uiButton"),
+        verifyButton: document.getElementById("verifyButton"),
+      };
+
+      function log(message) {
+        const item = document.createElement("div");
+        item.className = "log-item";
+        item.textContent = `${new Date().toLocaleTimeString()}  ${message}`;
+        els.logBody.prepend(item);
+      }
+
+      function getSelectedElement() {
+        return state.manifest.elements.find((element) => element.id === state.selectedElementId);
+      }
+
+      function selectElement(id) {
+        state.selectedElementId = id;
+        render();
+      }
+
+      function renderCanvas() {
+        els.mockScreen.querySelectorAll(".bbox").forEach((node) => node.remove());
+        const { width, height } = state.sourceImage;
+
+        state.manifest.elements.forEach((element) => {
+          const [x, y, w, h] = element.bbox;
+          const box = document.createElement("button");
+          box.className = `bbox ${element.needsReview ? "needs-review" : ""} ${
+            element.id === state.selectedElementId ? "selected" : ""
+          }`;
+          box.dataset.strategy = element.strategy;
+          box.style.left = `${(x / width) * 100}%`;
+          box.style.top = `${(y / height) * 100}%`;
+          box.style.width = `${(w / width) * 100}%`;
+          box.style.height = `${(h / height) * 100}%`;
+          box.title = `${element.id} (${element.strategy})`;
+          box.addEventListener("click", (event) => {
+            event.stopPropagation();
+            selectElement(element.id);
+          });
+
+          const label = document.createElement("span");
+          label.className = "bbox-label";
+          label.textContent = element.id;
+          box.appendChild(label);
+
+          els.mockScreen.appendChild(box);
+        });
+      }
+
+      function renderElementList() {
+        els.elementCount.textContent = `${state.manifest.elements.length} 个元素`;
+        els.elementList.innerHTML = "";
+
+        state.manifest.elements.forEach((element) => {
+          const row = document.createElement("div");
+          row.className = `element-row ${
+            element.id === state.selectedElementId ? "selected" : ""
+          }`;
+          row.addEventListener("click", () => selectElement(element.id));
+          row.innerHTML = `
+            <div>
+              <div class="element-name">
+                <span class="dot ${element.strategy}"></span>
+                <span>${element.id}</span>
+              </div>
+              <div class="meta">${element.type} · ${Math.round(
+                element.confidence * 100,
+              )}% · ${element.needsReview ? "需要检查" : "已接受"}</div>
+            </div>
+            <span class="badge">${element.strategy}</span>
+          `;
+          els.elementList.appendChild(row);
+        });
+      }
+
+      function renderDetail() {
+        const element = getSelectedElement();
+
+        if (!element) {
+          els.elementDetail.innerHTML =
+            '<div class="empty">选择一个标注框或元素后，在这里编辑类型、还原策略和重绘提示词。</div>';
+          els.selectedBadge.textContent = "未选择元素";
+          return;
+        }
+
+        els.selectedBadge.textContent = element.id;
+        els.elementDetail.innerHTML = `
+          <div class="field">
+            <label>类型</label>
+            <select id="typeSelect">
+              ${TYPES.map(
+                (type) =>
+                  `<option value="${type}" ${type === element.type ? "selected" : ""}>${type}</option>`,
+              ).join("")}
+            </select>
+          </div>
+          <div class="field">
+            <label>还原策略</label>
+            <select id="strategySelect">
+              ${STRATEGIES.map(
+                (strategy) =>
+                  `<option value="${strategy}" ${
+                    strategy === element.strategy ? "selected" : ""
+                  }>${strategy}</option>`,
+              ).join("")}
+            </select>
+          </div>
+          <div class="field">
+            <label>重绘提示词</label>
+            <textarea id="promptInput" placeholder="仅在 regenerate 策略下使用">${
+              element.prompt || ""
+            }</textarea>
+          </div>
+          <div class="field">
+            <label>判断原因</label>
+            <textarea id="reasonInput">${element.reason}</textarea>
+          </div>
+          <div class="meta">bbox: [${element.bbox.join(", ")}]</div>
+        `;
+
+        document.getElementById("typeSelect").addEventListener("change", (event) => {
+          element.type = event.target.value;
+          log(`已更新 ${element.id} 的类型 -> ${element.type}`);
+          render();
+        });
+
+        document
+          .getElementById("strategySelect")
+          .addEventListener("change", (event) => {
+            element.strategy = event.target.value;
+            element.needsReview = false;
+            log(`已更新 ${element.id} 的还原策略 -> ${element.strategy}`);
+            render();
+          });
+
+        document.getElementById("promptInput").addEventListener("input", (event) => {
+          element.prompt = event.target.value;
+        });
+
+        document.getElementById("reasonInput").addEventListener("input", (event) => {
+          element.reason = event.target.value;
+        });
+      }
+
+      function renderAssets() {
+        const assetElements = state.manifest.elements.filter((element) =>
+          ["crop", "regenerate"].includes(element.strategy),
+        );
+
+        if (!state.assetsGenerated) {
+          els.assetGrid.innerHTML = '<div class="empty">点击“生成资产”后，这里显示裁剪和重绘结果。</div>';
+          return;
+        }
+
+        els.assetGrid.innerHTML = "";
+        assetElements.forEach((element) => {
+          const tile = document.createElement("div");
+          tile.className = "asset-tile";
+          tile.innerHTML = `
+            <div class="asset-preview"></div>
+            <div class="asset-title">${element.id}</div>
+          `;
+          els.assetGrid.appendChild(tile);
+        });
+      }
+
+      function renderPreview() {
+        if (!state.uiGenerated) {
+          els.previewBadge.textContent = "未生成";
+          els.previewPlaceholder.textContent =
+            "点击“生成界面”后这里显示预览。当前原型先展示工作台结构和策略编辑。";
+          return;
+        }
+
+        els.previewBadge.textContent = "已生成";
+        els.previewPlaceholder.innerHTML = `
+          <div>
+            <strong>已生成模拟预览</strong>
+            <p style="color: var(--muted); margin: 10px 0 0; line-height: 1.55;">
+              后续接入 generate API 后，这里会加载 workspace/{projectId}/generated/preview.html。
+            </p>
+          </div>
+        `;
+      }
+
+      function renderStatus() {
+        const reviewCount = state.manifest.elements.filter((element) => element.needsReview).length;
+        els.statusText.textContent = `${state.manifest.elements.length} 个元素 · ${reviewCount} 个需要检查`;
+      }
+
+      function render() {
+        renderCanvas();
+        renderElementList();
+        renderDetail();
+        renderAssets();
+        renderPreview();
+        renderStatus();
+      }
+
+      els.uploadButton.addEventListener("click", () => {
+        els.fileInput.click();
+      });
+
+      els.fileInput.addEventListener("change", (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        log(`已选择 ${file.name}；后续会接入真实上传 API。`);
+        els.statusText.textContent = `已选择本地文件：${file.name}`;
+      });
+
+      els.analyzeButton.addEventListener("click", () => {
+        state.projectId = "mock-project";
+        state.selectedElementId = state.manifest.elements[0]?.id || null;
+        log("模拟分析完成，已加载示例 manifest。");
+        render();
+      });
+
+      els.assetsButton.addEventListener("click", () => {
+        state.assetsGenerated = true;
+        log("已为 crop / regenerate 元素生成模拟资产。");
+        render();
+      });
+
+      els.uiButton.addEventListener("click", () => {
+        state.uiGenerated = true;
+        log("已生成模拟 React/Tailwind 预览。");
+        render();
+      });
+
+      els.verifyButton.addEventListener("click", () => {
+        state.verified = true;
+        els.diffScore.textContent = "相似度：0.84（模拟）";
+        log("视觉验证完成，模拟相似度为 0.84。");
+      });
+
+      state.selectedElementId = state.manifest.elements[0]?.id || null;
+      log("工作台原型已加载。");
+      render();
+    </script>
+  </body>
+</html>

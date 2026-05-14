@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>电商首页还原</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #dfe2e7;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC",
+          "Microsoft YaHei", sans-serif;
+        color: #111;
+        display: grid;
+        place-items: start center;
+      }
+
+      .phone {
+        width: 393px;
+        min-height: 849px;
+        background: #f6f6f6;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+      }
+
+      .screen {
+        height: 849px;
+        overflow: hidden;
+        padding-bottom: 86px;
+      }
+
+      .status {
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 29px 0 36px;
+        background: #fff;
+        font-weight: 800;
+        font-size: 15px;
+      }
+
+      .signal {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .bars {
+        display: flex;
+        align-items: end;
+        gap: 2px;
+        height: 13px;
+      }
+
+      .bars i {
+        width: 3px;
+        border-radius: 2px;
+        background: #111;
+      }
+
+      .bars i:nth-child(1) { height: 5px; }
+      .bars i:nth-child(2) { height: 7px; }
+      .bars i:nth-child(3) { height: 10px; }
+      .bars i:nth-child(4) { height: 13px; }
+
+      .battery {
+        width: 24px;
+        height: 12px;
+        border: 1.8px solid #111;
+        border-radius: 3px;
+        position: relative;
+      }
+
+      .battery::before {
+        content: "";
+        position: absolute;
+        inset: 2px;
+        border-radius: 1px;
+        background: #111;
+      }
+
+      .battery::after {
+        content: "";
+        position: absolute;
+        right: -4px;
+        top: 3px;
+        width: 2px;
+        height: 5px;
+        border-radius: 2px;
+        background: #111;
+      }
+
+      .top {
+        background: #fff;
+        padding: 5px 10px 0;
+      }
+
+      .search-row {
+        height: 35px;
+        display: grid;
+        grid-template-columns: 48px 1fr 44px 44px;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .city {
+        font-size: 14px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .chevron {
+        width: 7px;
+        height: 7px;
+        border-bottom: 2px solid currentColor;
+        border-right: 2px solid currentColor;
+        transform: rotate(45deg);
+        margin-top: -3px;
+      }
+
+      .search {
+        height: 27px;
+        border: 1.5px solid #f23a45;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        padding-left: 12px;
+        overflow: hidden;
+        background: #fff;
+      }
+
+      .glass {
+        width: 13px;
+        height: 13px;
+        border: 1.8px solid #b8b8bd;
+        border-radius: 50%;
+        position: relative;
+        margin-right: 9px;
+      }
+
+      .glass::after {
+        content: "";
+        position: absolute;
+        width: 6px;
+        height: 2px;
+        right: -5px;
+        bottom: -3px;
+        background: #b8b8bd;
+        transform: rotate(45deg);
+        border-radius: 2px;
+      }
+
+      .placeholder {
+        color: #a8a8ad;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      .search button {
+        margin-left: auto;
+        width: 47px;
+        height: 25px;
+        border: 0;
+        border-radius: 999px;
+        background: #f43b45;
+        color: white;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .quick {
+        display: grid;
+        justify-items: center;
+        gap: 2px;
+        font-size: 10px;
+        color: #222;
+      }
+
+      .chat {
+        width: 18px;
+        height: 15px;
+        border: 1.7px solid #111;
+        border-radius: 9px;
+        position: relative;
+      }
+
+      .chat::before {
+        content: "";
+        position: absolute;
+        right: -5px;
+        top: -4px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #f43b45;
+      }
+
+      .scan {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #111;
+        border-left-color: transparent;
+        border-right-color: transparent;
+        border-radius: 4px;
+      }
+
+      .tabs {
+        height: 45px;
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        align-items: center;
+        text-align: center;
+        font-size: 14px;
+        color: #202124;
+      }
+
+      .tab {
+        position: relative;
+      }
+
+      .tab.active {
+        color: #f23a45;
+        font-size: 17px;
+        font-weight: 900;
+      }
+
+      .tab.active::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -8px;
+        width: 13px;
+        height: 3px;
+        transform: translateX(-50%);
+        border-radius: 3px;
+        background: #f23a45;
+      }
+
+      .content {
+        padding: 0 10px 0;
+      }
+
+      .banner {
+        height: 118px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-top: 8px;
+        background: #e91d35;
+        position: relative;
+      }
+
+      .crop {
+        background-image: url("./assets/source.png");
+        background-size: 393px 849px;
+      }
+
+      .banner .crop {
+        position: absolute;
+        inset: 0;
+        background-position: -10px -111px;
+      }
+
+      .banner-copy {
+        position: absolute;
+        left: 22px;
+        top: 28px;
+        color: #fff7df;
+        font-size: 32px;
+        line-height: 1;
+        font-weight: 1000;
+        font-style: italic;
+        letter-spacing: -1px;
+      }
+
+      .banner-pill {
+        position: absolute;
+        left: 44px;
+        top: 67px;
+        height: 28px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 245, 210, 0.85);
+        color: #fff7df;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 0 12px;
+        font-weight: 900;
+        font-size: 17px;
+      }
+
+      .dots {
+        position: absolute;
+        left: 182px;
+        bottom: 9px;
+        display: flex;
+        gap: 5px;
+      }
+
+      .dots i {
+        width: 7px;
+        height: 4px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.75);
+      }
+
+      .dots i:nth-child(2) {
+        background: rgba(150, 83, 45, 0.45);
+      }
+
+      .card {
+        background: #fff;
+        border-radius: 8px;
+        margin-top: 8px;
+      }
+
+      .services {
+        padding: 14px 11px 9px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        row-gap: 13px;
+      }
+
+      .service {
+        display: grid;
+        justify-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #222;
+      }
+
+      .service-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-weight: 900;
+        font-size: 20px;
+      }
+
+      .green { background: #23ce6b; }
+      .red { background: #ff454f; }
+      .orange { background: #ff842e; border-radius: 50%; }
+      .pink { background: #f84b82; }
+      .blue { background: linear-gradient(#3cc1ff, #2f72ee); }
+      .cyan { background: #3ea4ff; }
+      .yellow { background: #ffb340; }
+      .purple { background: #7a4df4; }
+      .violet { background: #8f56ff; border-radius: 50%; }
+
+      .section {
+        padding: 10px 11px 11px;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .title-left {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1;
+        font-weight: 1000;
+      }
+
+      .badge {
+        padding: 2px 4px;
+        border-radius: 4px;
+        background: #f43b45;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .timer {
+        color: #f43b45;
+        font-size: 13px;
+        font-weight: 700;
+        background: #ffe7e8;
+        border-radius: 4px;
+        padding: 2px 6px;
+      }
+
+      .flash-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .flash-item {
+        min-width: 0;
+      }
+
+      .photo {
+        height: 67px;
+        background-image: url("./assets/source.png");
+        background-size: 393px 849px;
+        background-repeat: no-repeat;
+        border-radius: 6px;
+        background-color: #fafafa;
+      }
+
+      .airpods { background-position: -36px -389px; }
+      .coffee { background-position: -142px -389px; }
+      .suitcase { background-position: -262px -389px; }
+
+      .name {
+        margin-top: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.25;
+        height: 28px;
+        overflow: hidden;
+      }
+
+      .price {
+        color: #f43b45;
+        font-size: 16px;
+        font-weight: 900;
+      }
+
+      .old {
+        color: #b7b7b7;
+        font-size: 10px;
+        text-decoration: line-through;
+        margin-left: 3px;
+      }
+
+      .sold {
+        font-size: 11px;
+        color: #333;
+        margin-top: 2px;
+      }
+
+      .bar {
+        height: 3px;
+        border-radius: 4px;
+        background: #e8e8e8;
+        overflow: hidden;
+        margin-top: 5px;
+      }
+
+      .bar span {
+        display: block;
+        height: 100%;
+        width: 68%;
+        background: #f43b45;
+        border-radius: inherit;
+      }
+
+      .guess-head {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 6px 0 10px;
+      }
+
+      .guess-head h2 {
+        font-size: 18px;
+      }
+
+      .refresh {
+        background: #fff;
+        border-radius: 999px;
+        padding: 5px 10px;
+        color: #666;
+        font-size: 12px;
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+      }
+
+      .product {
+        height: 91px;
+        background: #fff;
+        border-radius: 7px;
+        display: grid;
+        grid-template-columns: 82px 1fr;
+        gap: 8px;
+        padding: 8px 7px;
+        overflow: hidden;
+      }
+
+      .product .photo {
+        width: 80px;
+        height: 75px;
+      }
+
+      .switch { background-position: -19px -563px; }
+      .shoe { background-position: -207px -568px; }
+      .sk2 { background-position: -23px -661px; }
+      .ipad { background-position: -203px -662px; }
+
+      .product-title {
+        font-size: 11px;
+        line-height: 1.32;
+        height: 30px;
+        font-weight: 700;
+        overflow: hidden;
+      }
+
+      .coupon {
+        margin-top: 7px;
+        color: #f43b45;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .coupon span {
+        border-radius: 3px;
+        background: #f43b45;
+        color: #fff;
+        padding: 2px 3px;
+        font-size: 10px;
+      }
+
+      .subline,
+      .shop {
+        color: #7d7d7d;
+        font-size: 9px;
+        margin-top: 5px;
+        white-space: nowrap;
+      }
+
+      .subline b {
+        color: #f43b45;
+        font-size: 12px;
+        margin-right: 7px;
+      }
+
+      .bottom-nav {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 74px;
+        background: rgba(255, 255, 255, 0.98);
+        border-top: 1px solid #e5e5e5;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        padding-top: 9px;
+      }
+
+      .nav-item {
+        display: grid;
+        justify-items: center;
+        align-content: start;
+        gap: 4px;
+        color: #666;
+        font-size: 12px;
+      }
+
+      .nav-item.active {
+        color: #f43b45;
+      }
+
+      .nav-icon {
+        width: 22px;
+        height: 22px;
+        border: 2px solid currentColor;
+        border-radius: 7px;
+      }
+
+      .nav-item.active .nav-icon {
+        background: #f43b45;
+        border-color: #f43b45;
+        border-radius: 7px 7px 5px 5px;
+      }
+
+      .home-indicator {
+        position: absolute;
+        left: 130px;
+        bottom: 5px;
+        width: 133px;
+        height: 5px;
+        border-radius: 99px;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <div>9:41</div>
+          <div class="signal">
+            <span class="bars"><i></i><i></i><i></i><i></i></span>
+            <span>5G</span>
+            <span class="battery"></span>
+          </div>
+        </div>
+
+        <div class="top">
+          <div class="search-row">
+            <div class="city">杭州 <span class="chevron"></span></div>
+            <div class="search">
+              <span class="glass"></span>
+              <span class="placeholder">搜索耳机、咖啡机、运动鞋</span>
+              <button>搜索</button>
+            </div>
+            <div class="quick"><span class="chat"></span><span>消息</span></div>
+            <div class="quick"><span class="scan"></span><span>扫一扫</span></div>
+          </div>
+          <div class="tabs">
+            <div class="tab active">推荐</div>
+            <div class="tab">数码</div>
+            <div class="tab">家电</div>
+            <div class="tab">服饰</div>
+            <div class="tab">美妆</div>
+            <div class="tab">食品</div>
+            <div class="tab">运动</div>
+            <div class="tab">家居</div>
+          </div>
+        </div>
+
+        <main class="content">
+          <section class="banner">
+            <div class="crop"></div>
+            <div class="banner-copy">618 预售开启</div>
+            <div class="banner-pill">每满300减50 ●</div>
+            <div class="dots"><i></i><i></i><i></i></div>
+          </section>
+
+          <section class="card services">
+            <div class="service"><div class="service-icon green">▣</div><span>超市</span></div>
+            <div class="service"><div class="service-icon red">ϟ</div><span>百亿补贴</span></div>
+            <div class="service"><div class="service-icon orange">ϟ</div><span>秒杀</span></div>
+            <div class="service"><div class="service-icon pink">▶</div><span>直播</span></div>
+            <div class="service"><div class="service-icon blue">✚</div><span>充值中心</span></div>
+            <div class="service"><div class="service-icon cyan">♟</div><span>到家</span></div>
+            <div class="service"><div class="service-icon yellow">¥</div><span>领券</span></div>
+            <div class="service"><div class="service-icon purple">★</div><span>品牌馆</span></div>
+            <div class="service"><div class="service-icon violet">✈</div><span>全球购</span></div>
+            <div class="service"><div class="service-icon yellow">♕</div><span>排行榜</span></div>
+          </section>
+
+          <section class="card section">
+            <div class="section-title">
+              <div class="title-left"><h2>限时秒杀</h2><span class="badge">限时抢购</span></div>
+              <div><span class="timer">02:14:39</span> ›</div>
+            </div>
+            <div class="flash-grid">
+              <div class="flash-item">
+                <div class="photo airpods"></div>
+                <div class="name">Apple AirPods 4 主动降噪</div>
+                <div><span class="price">¥899</span><span class="old">¥1299</span></div>
+                <div class="sold">已售 63%</div>
+                <div class="bar"><span></span></div>
+              </div>
+              <div class="flash-item">
+                <div class="photo coffee"></div>
+                <div class="name">德龙全自动咖啡机</div>
+                <div><span class="price">¥2690</span><span class="old">¥3200</span></div>
+                <div class="sold">已售 71%</div>
+                <div class="bar"><span style="width:74%"></span></div>
+              </div>
+              <div class="flash-item">
+                <div class="photo suitcase"></div>
+                <div class="name">地平线8号行李箱 20英寸</div>
+                <div><span class="price">¥299</span><span class="old">¥399</span></div>
+                <div class="sold">已售 63%</div>
+                <div class="bar"><span style="width:55%"></span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="guess-head">
+            <h2>猜你喜欢</h2>
+            <div class="refresh">换一换 ⟳</div>
+          </section>
+
+          <section class="product-grid">
+            <article class="product">
+              <div class="photo switch"></div>
+              <div>
+                <div class="product-title">任天堂 Switch OLED游戏机 日版续航增强</div>
+                <div class="coupon"><span>券后</span>¥1899</div>
+                <div class="subline"><b>¥1949</b>月销 1.3万+</div>
+                <div class="shop">任天堂官方旗舰店　98%好评</div>
+              </div>
+            </article>
+            <article class="product">
+              <div class="photo shoe"></div>
+              <div>
+                <div class="product-title">耐克 Air Zoom Pegasus 40 男子跑步鞋</div>
+                <div class="coupon"><span>券后</span>¥539</div>
+                <div class="subline"><b>¥599</b>月销 8000+</div>
+                <div class="shop">NIKE 官方旗舰店　98%好评</div>
+              </div>
+            </article>
+            <article class="product">
+              <div class="photo sk2"></div>
+              <div>
+                <div class="product-title">SK-II 神仙水护肤精华露 230ml</div>
+                <div class="coupon"><span>券后</span>¥1370</div>
+                <div class="subline"><b>¥1450</b>月销 2.3万+</div>
+                <div class="shop">SK-II 官方旗舰店　98%好评</div>
+              </div>
+            </article>
+            <article class="product">
+              <div class="photo ipad"></div>
+              <div>
+                <div class="product-title">Apple iPad Air5 10.9英寸 平板电脑</div>
+                <div class="coupon"><span>券后</span>¥4399</div>
+                <div class="subline"><b>¥4799</b>月销 8000+</div>
+                <div class="shop">Apple 产品京东自营旗舰店　99%好评</div>
+              </div>
+            </article>
+          </section>
+        </main>
+      </div>
+
+      <nav class="bottom-nav">
+        <div class="nav-item active"><span class="nav-icon"></span><span>首页</span></div>
+        <div class="nav-item"><span class="nav-icon" style="border-radius:4px"></span><span>分类</span></div>
+        <div class="nav-item"><span class="nav-icon" style="border-radius:0; transform:skew(-8deg)"></span><span>购物车</span></div>
+        <div class="nav-item"><span class="nav-icon" style="border-radius:50%"></span><span>消息</span></div>
+        <div class="nav-item"><span class="nav-icon" style="border-radius:50% 50% 8px 8px"></span><span>我的</span></div>
+      </nav>
+      <div class="home-indicator"></div>
+    </div>
+  </body>
+</html>
