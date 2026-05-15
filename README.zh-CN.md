@@ -86,3 +86,7 @@ IMAGE_MODEL=gpt-image-2
 - 不要用图标库或重新绘制替代已有切图素材，除非资源包里确实没有对应素材。
 - 保持素材透明背景、原始比例和视觉细节。
 ```
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=shouzi23333-rgb/AiClip&type=Date)](https://www.star-history.com/#shouzi23333-rgb/AiClip&Date)

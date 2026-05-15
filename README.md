@@ -88,3 +88,7 @@ Requirements:
 - Do not replace packaged assets with an icon library or redraw them unless the package does not include the needed asset.
 - Preserve each asset's transparent background, original proportions, and visual details.
 ```
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=shouzi23333-rgb/AiClip&type=Date)](https://www.star-history.com/#shouzi23333-rgb/AiClip&Date)
