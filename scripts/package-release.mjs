@@ -76,8 +76,7 @@ async function zipDirectory(sourceDir, zipPath) {
     await spawnAsync("powershell", [
       "-NoProfile",
       "-Command",
-      "Compress-Archive -Path AiClip -DestinationPath $args[0] -Force",
-      zipPath,
+      `Compress-Archive -Path 'AiClip' -DestinationPath ${powerShellQuote(zipPath)} -Force`,
     ], dirname(sourceDir));
     return;
   }
@@ -105,4 +104,8 @@ async function spawnAsync(command, args, cwd) {
       }
     });
   });
+}
+
+function powerShellQuote(value) {
+  return `'${value.replaceAll("'", "''")}'`;
 }
