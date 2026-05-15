@@ -86,6 +86,45 @@ describe("POST /api/generate-assets", () => {
     expect(result.model).toBe("gpt-image-2-vip");
   });
 
+  it("keeps IMAGE_MODEL gpt-image-2 for ai-chroma assets", async () => {
+    process.env.IMAGE_BASEURL = "https://image-api.example.test/v1";
+    process.env.IMAGE_APIKEY = "test-key";
+    process.env.IMAGE_MODEL = "gpt-image-2";
+
+    let model = "";
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (_url, init) => {
+      model = String((init?.body as FormData).get("model"));
+      return new Response(
+        JSON.stringify({
+          data: [
+            {
+              b64_json: Buffer.from(tinyPngBytes()).toString("base64"),
+            },
+          ],
+        }),
+        {
+          headers: { "content-type": "application/json" },
+          status: 200,
+        },
+      );
+    });
+
+    const response = await POST(
+      new Request("http://localhost/api/generate-assets", {
+        body: createRequestFormData(await solidPngBytes(160, 160), regenerateManifest(), {
+          height: 160,
+          width: 160,
+        }),
+        method: "POST",
+      }),
+    );
+    const result = await response.json();
+
+    expect(response.ok).toBe(true);
+    expect(model).toBe("gpt-image-2");
+    expect(result.model).toBe("gpt-image-2");
+  });
+
   it("does not silently return crop parts when ai-chroma provider fails", async () => {
     process.env.IMAGE_BASEURL = "https://image-api.example.test/v1";
     process.env.IMAGE_APIKEY = "test-key";

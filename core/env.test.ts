@@ -26,7 +26,23 @@ describe("getServerEnv", () => {
     expect(getServerEnv("APIKEY")).toBe("real-env-key");
   });
 
-  it("falls back to .env.sample when process.env is missing", async () => {
+  it("falls back to .env.local before .env.sample when process.env is missing", async () => {
+    tempDir = await mkdtemp(join(tmpdir(), "env-local-"));
+    process.chdir(tempDir);
+    delete process.env.BASEURL;
+    await writeFile(
+      join(tempDir, ".env.local"),
+      "BASEURL=https://local.example.test/v1\n",
+    );
+    await writeFile(
+      join(tempDir, ".env.sample"),
+      "BASEURL=https://sample.example.test/v1\n",
+    );
+
+    expect(getServerEnv("BASEURL")).toBe("https://local.example.test/v1");
+  });
+
+  it("falls back to .env.sample when process.env and .env.local are missing", async () => {
     tempDir = await mkdtemp(join(tmpdir(), "env-sample-"));
     process.chdir(tempDir);
     delete process.env.BASEURL;

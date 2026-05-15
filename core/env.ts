@@ -1,31 +1,38 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-let sampleEnvCache: Record<string, string> | null = null;
-let sampleEnvCacheCwd: string | null = null;
+let fileEnvCache: Record<string, string> | null = null;
+let fileEnvCacheCwd: string | null = null;
 
 export function getServerEnv(name: string) {
-  const value = process.env[name] ?? getSampleEnv()[name];
+  const value = process.env[name] ?? getFileEnv()[name];
   if (!value || isPlaceholderEnvValue(value)) {
     return undefined;
   }
   return value;
 }
 
-function getSampleEnv() {
+function getFileEnv() {
   const cwd = process.cwd();
-  if (sampleEnvCache && sampleEnvCacheCwd === cwd) {
-    return sampleEnvCache;
+  if (fileEnvCache && fileEnvCacheCwd === cwd) {
+    return fileEnvCache;
   }
 
+  fileEnvCache = {
+    ...readEnvFile(join(cwd, ".env.sample")),
+    ...readEnvFile(join(cwd, ".env.local")),
+  };
+  fileEnvCacheCwd = cwd;
+
+  return fileEnvCache;
+}
+
+function readEnvFile(path: string) {
   try {
-    sampleEnvCache = parseEnvFile(readFileSync(join(cwd, ".env.sample"), "utf8"));
+    return parseEnvFile(readFileSync(path, "utf8"));
   } catch {
-    sampleEnvCache = {};
+    return {};
   }
-  sampleEnvCacheCwd = cwd;
-
-  return sampleEnvCache;
 }
 
 function parseEnvFile(content: string) {

@@ -7,6 +7,7 @@ import argparse
 import json
 import math
 from pathlib import Path
+from statistics import median
 from typing import Iterable
 
 from PIL import Image

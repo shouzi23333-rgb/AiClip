@@ -15,7 +15,7 @@ import type {
   PlannedAsset,
 } from "./types";
 
-const DEFAULT_IMAGE_MODEL = "gpt-image-2-vip";
+const DEFAULT_IMAGE_MODEL = "gpt-image-2";
 const ASSET_GENERATION_TIMEOUT_MS = 5 * 60_000;
 const DEBUG_ASSET_SHEET_DIR = "tmp/generate-assets-debug";
 const ASSET_SHEET_UPLOAD_FIELD = "image";
@@ -43,7 +43,7 @@ function getImageConfig() {
 }
 
 function normalizeGptImageModel(model?: string) {
-  if (!model || model === "gpt-image-2") {
+  if (!model) {
     return DEFAULT_IMAGE_MODEL;
   }
 
