@@ -38,32 +38,6 @@ npm run dev
 
 AiClip uses the local Python script `scripts/process_chroma_icons.py` during asset generation to remove the green chroma background and export transparent PNG files, so `python3` and Pillow must be available on the machine running the Next.js server.
 
-## Downloadable Builds
-
-GitHub Actions can package AiClip into ready-to-run zip files:
-
-- `aiclip-macos.zip`
-- `aiclip-windows.zip`
-
-After downloading and extracting a package:
-
-1. Run `start.command` on macOS or `start.bat` on Windows.
-2. The first run creates `.env.local` from `.env.sample`.
-3. Fill in `.env.local` with your API settings.
-4. Run the start script again and open `http://127.0.0.1:3000`.
-
-The start script creates a local Python virtual environment on first launch and installs `requirements.txt` into it. The machine still needs Python 3 available as `python3` on macOS or `python` on Windows.
-
-To build the package locally:
-
-```bash
-npm ci
-npm run build
-npm run package:release -- aiclip-local
-```
-
-The zip is written to `dist/release/aiclip-local.zip`.
-
 ## Environment
 
 You can either edit `.env.sample` directly for local testing or copy it to `.env.local` for private local secrets:

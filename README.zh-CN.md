@@ -36,32 +36,6 @@ npm run dev
 
 AiClip 在生成资产时会调用本地 Python 脚本 `scripts/process_chroma_icons.py`，用于扣除绿色 chroma 背景并导出透明 PNG，所以运行 Next.js 服务的机器需要可用的 `python3` 和 Pillow。
 
-## 可下载运行包
-
-GitHub Actions 可以把 AiClip 自动打包成可下载 zip：
-
-- `aiclip-macos.zip`
-- `aiclip-windows.zip`
-
-下载并解压后：
-
-1. macOS 运行 `start.command`，Windows 运行 `start.bat`。
-2. 第一次运行会从 `.env.sample` 创建 `.env.local`。
-3. 在 `.env.local` 里填入 API 配置。
-4. 再次运行启动脚本，打开 `http://127.0.0.1:3000`。
-
-启动脚本会在第一次正式启动时创建本地 Python 虚拟环境，并自动安装 `requirements.txt`。用户电脑仍需要有 Python 3：macOS 可用 `python3`，Windows 可用 `python`。
-
-本地也可以手动构建运行包：
-
-```bash
-npm ci
-npm run build
-npm run package:release -- aiclip-local
-```
-
-生成的 zip 位于 `dist/release/aiclip-local.zip`。
-
 ## 环境变量
 
 本地测试可以直接修改 `.env.sample`，也可以复制成 `.env.local` 保存私有配置：

@@ -8,7 +8,6 @@ import {
 import {
   generateDeterministicParts,
 } from "./deterministic";
-import { getPythonBin } from "./python-runtime";
 import type {
   AiGenerationIssue,
   AssetSheetManifest,
@@ -591,7 +590,7 @@ async function processGeneratedAssetSheet({
     try {
       await writeFile(inputPath, imageBytes);
       await writeFile(manifestPath, JSON.stringify(manifest));
-      await execFileAsync(child.execFile, getPythonBin(), [
+      await execFileAsync(child.execFile, "python3", [
         path.resolve(CHROMA_SCRIPT_PATH),
         "--input",
         inputPath,
