@@ -72,9 +72,23 @@ async function removeLocalOnlyFiles(packageDir) {
 }
 
 async function zipDirectory(sourceDir, zipPath) {
+  if (process.platform === "win32") {
+    await spawnAsync("powershell", [
+      "-NoProfile",
+      "-Command",
+      "Compress-Archive -Path AiClip -DestinationPath $args[0] -Force",
+      zipPath,
+    ], dirname(sourceDir));
+    return;
+  }
+
+  await spawnAsync("zip", ["-qry", zipPath, "AiClip"], dirname(sourceDir));
+}
+
+async function spawnAsync(command, args, cwd) {
   await new Promise((resolvePromise, rejectPromise) => {
-    const child = spawn("zip", ["-qry", zipPath, "AiClip"], {
-      cwd: dirname(sourceDir),
+    const child = spawn(command, args, {
+      cwd,
       stdio: ["ignore", "ignore", "pipe"],
     });
 
@@ -87,7 +101,7 @@ async function zipDirectory(sourceDir, zipPath) {
       if (code === 0) {
         resolvePromise();
       } else {
-        rejectPromise(new Error(`zip failed with code ${code}: ${stderr}`));
+        rejectPromise(new Error(`${command} failed with code ${code}: ${stderr}`));
       }
     });
   });
