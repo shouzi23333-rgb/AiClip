@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
+    "package:release": "node scripts/package-release.mjs",
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",

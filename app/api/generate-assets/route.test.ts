@@ -1,6 +1,7 @@
 // @vitest-environment node
 
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { getPythonBin } from "./python-runtime";
 import { POST } from "./route";
 
 describe("POST /api/generate-assets", () => {
@@ -9,6 +10,18 @@ describe("POST /api/generate-assets", () => {
   afterEach(() => {
     process.env = { ...originalEnv };
     vi.restoreAllMocks();
+  });
+
+  it("uses PYTHON_BIN when running the chroma post-processor", () => {
+    process.env.PYTHON_BIN = "/Applications/AiClip Runtime/.venv/bin/python";
+
+    expect(getPythonBin()).toBe("/Applications/AiClip Runtime/.venv/bin/python");
+  });
+
+  it("defaults chroma post-processing to python3", () => {
+    delete process.env.PYTHON_BIN;
+
+    expect(getPythonBin()).toBe("python3");
   });
 
   it("generates crop parts without calling the image model", async () => {
