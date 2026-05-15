@@ -107,6 +107,25 @@ describe("Workspace", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows a compression reminder when uploading an image over 800kb", () => {
+    const createObjectUrl = vi.spyOn(URL, "createObjectURL");
+    render(<Workspace />);
+
+    const file = new File([new Uint8Array(800 * 1024 + 1)], "large.png", {
+      type: "image/png",
+    });
+    const input = document.querySelector(
+      'input[accept="image/png,image/jpeg"]',
+    ) as HTMLInputElement;
+
+    fireEvent.change(input, { target: { files: [file] } });
+
+    expect(screen.getByText("图片过大 请压缩后上传")).toBeInTheDocument();
+    expect(createObjectUrl).not.toHaveBeenCalled();
+
+    createObjectUrl.mockRestore();
+  });
+
   it("selects the next element that needs review", () => {
     render(<Workspace />);
 

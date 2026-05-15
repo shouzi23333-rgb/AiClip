@@ -355,6 +355,7 @@ const cacheStoreName = "workspace";
 const cacheKey = "latest-upload";
 const analysisImageMaxSide = 1600;
 const analysisRegionCount = 1;
+const maxUploadImageBytes = 800 * 1024;
 
 export function Workspace() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -614,6 +615,25 @@ export function Workspace() {
       setIsParsing(false);
     };
     image.src = objectUrl;
+  }
+
+  function handleImageFileChange(file: File | undefined, input: HTMLInputElement) {
+    if (!file) {
+      return;
+    }
+
+    if (file.size > maxUploadImageBytes) {
+      resetUpload();
+      setAnalysisMeta({
+        error: "图片过大 请压缩后上传",
+        model: "local validation",
+        source: "mock",
+      });
+      input.value = "";
+      return;
+    }
+
+    parseUploadedFile(file);
   }
 
   function resetUpload() {
@@ -1050,10 +1070,7 @@ export function Workspace() {
           accept="image/png,image/jpeg"
           className="hidden"
           onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) {
-              parseUploadedFile(file);
-            }
+            handleImageFileChange(event.target.files?.[0], event.currentTarget);
           }}
           ref={inputRef}
           type="file"
